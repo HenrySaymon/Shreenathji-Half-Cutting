@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a1628">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Billing">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Shreenathji Billing</title>
+<link rel="stylesheet" href="fonts.css">
+<script src="lib/html2canvas.min.js"></script>
+<script src="lib/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#0a1628;--sf:#0f1e36;--cd:#162540;--bd:#1e3354;--ac:#00c2ff;--ac2:#0066ff;--ok:#00e5a0;--no:#ff4757;--wn:#ffaa00;--tx:#e8f0fe;--mu:#7d92b5;--f:'Sora',system-ui,sans-serif;--m:'JetBrains Mono',ui-monospace,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root{--bg:#eef3fb;--sf:#fff;--cd:#fff;--bd:#d6e0f0;--tx:#0a1628;--mu:#5d7194;--ok:#00936a;--no:#e02f40;--wn:#b87000;--ac:#0077c2}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--tx);font-family:var(--f);overscroll-behavior:none}
+#app{max-width:480px;height:100%;margin:0 auto;display:flex;flex-direction:column;position:relative;overflow:hidden}
+header{display:flex;align-items:center;gap:11px;padding:12px 16px;flex-shrink:0}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--ac2),var(--ac));display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,102,255,.35)}
+.logo svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+header h1{font-size:15px;font-weight:800;margin:0;line-height:1.2}
+header p{font-size:11px;margin:1px 0 0;color:var(--mu)}
+main{flex:1;overflow-y:auto;padding:4px 14px 110px;scrollbar-width:none}
+.v{display:none}.v.on{display:block;animation:vin .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes vin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+nav{position:absolute;left:12px;right:12px;bottom:10px;height:62px;background:var(--cd);border:1px solid var(--bd);border-radius:22px;display:grid;grid-template-columns:repeat(5,1fr);box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:20}
+nav i{position:absolute;top:0;bottom:0;left:0;width:20%;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}nav i:after{content:"";position:absolute;inset:6px;border-radius:16px;background:linear-gradient(135deg,rgba(0,102,255,.28),rgba(0,194,255,.2))}
+nav button{position:relative;background:none;border:0;color:var(--mu);font:600 10px var(--f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:color .3s}
+nav button.on{color:var(--ac)}
+nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+nav button.on svg{transform:translateY(-2px) scale(1.12)}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:18px;padding:15px;margin-bottom:12px}
+.lbl{font-size:11px;font-weight:700;color:var(--mu);margin-bottom:9px}
+.field{margin-bottom:11px}.field>label{font-size:11px;font-weight:600;color:var(--mu);display:block;margin-bottom:5px}
+.in{width:100%;padding:12px 13px;border-radius:11px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font:15px var(--f);outline:none;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
+.in:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(0,194,255,.15)}
+.in[type=number]{font-family:var(--m)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 14px;border-radius:12px;border:0;font:700 13px var(--f);cursor:pointer;transition:transform .15s,filter .2s;color:#fff}
+.btn:active{transform:scale(.95)}.btn.p{background:linear-gradient(135deg,var(--ac2),var(--ac));box-shadow:0 6px 16px rgba(0,102,255,.3)}
+.btn.o{background:transparent;color:var(--ac);border:1.5px solid var(--ac)}.btn.d{background:var(--no)}.btn.g{background:var(--ok);color:#04261c}.btn.m{background:var(--sf);color:var(--mu);border:1px solid var(--bd)}
+.btn.s{padding:8px 11px;font-size:12px;border-radius:9px}.w{width:100%}.flex{display:flex;gap:8px}.flex>*{flex:1}
+.hero{padding:6px 4px 16px}.hero .t{font-size:12px;color:var(--mu);font-weight:600}
+.big{font:700 40px/1.1 var(--m);color:var(--tx);margin:4px 0;letter-spacing:-1.5px}.hero .s{font-size:12px;color:var(--mu)}
+.yr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.yr b{font:700 15px var(--m)}
+.yr button{width:34px;height:34px;border-radius:50%;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-size:18px;cursor:pointer;transition:transform .15s}.yr button:active{transform:scale(.85)}
+.rr{display:flex;align-items:center;gap:16px;margin-bottom:16px}.rw{position:relative;width:104px;height:104px;flex-shrink:0}
+.rw svg{width:100%;height:100%;transform:rotate(-90deg)}.rw circle{fill:none;stroke-width:9}.rb{stroke:var(--bd)}
+.rf{stroke:var(--ok);stroke-linecap:round;stroke-dasharray:263.9;stroke-dashoffset:263.9;transition:stroke-dashoffset 1.3s cubic-bezier(.2,.8,.2,1)}
+.rw span{position:absolute;inset:0;display:grid;place-items:center;font:700 17px var(--m)}
+.st{flex:1;display:grid;gap:9px}.st div{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--mu)}
+.st b{font:700 15px var(--m);color:var(--tx)}.st .g b{color:var(--ok)}.st .r b{color:var(--no)}
+.bars{display:flex;align-items:flex-end;gap:5px;height:118px;border-bottom:1px solid var(--bd)}
+.bar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer}
+.bar i{display:block;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--ac),var(--ac2));height:0;min-height:3px;transition:height .9s cubic-bezier(.2,.9,.3,1.1),filter .2s}
+.bar.cur i{background:linear-gradient(180deg,var(--ok),var(--ac))}.bar.sel i{filter:brightness(1.4)}
+.ml{display:flex;gap:5px;margin-top:5px}.ml span{flex:1;text-align:center;font-size:9px;color:var(--mu)}
+.bi{font-size:12px;color:var(--mu);text-align:center;margin-top:10px;min-height:16px}
+.sh{font-size:12px;font-weight:700;color:var(--mu);margin:16px 2px 9px;display:flex;justify-content:space-between;align-items:center}
+.inv{background:var(--cd);border:1px solid var(--bd);border-radius:15px;padding:13px;margin-bottom:9px;cursor:pointer;animation:vin .4s both;transition:transform .15s}
+.inv:active{transform:scale(.98)}.inv .a{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.inv .n{font:500 11px var(--m);color:var(--mu)}.inv .c{font-weight:700;font-size:14px;margin:2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.amt{font:700 15px var(--m);white-space:nowrap}.inv .z{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:11px;color:var(--mu)}
+.pill{border:0;border-radius:99px;padding:5px 11px;font:700 11px var(--f);cursor:pointer;transition:background .3s,color .3s,transform .2s}
+.pill.paid{background:rgba(0,229,160,.15);color:var(--ok)}.pill.unpaid{background:rgba(255,71,87,.15);color:var(--no)}.pill.pop{animation:pop .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:none}}
+.chips{display:flex;gap:7px;margin:10px 0 12px}.chips button{flex:1;padding:9px;border-radius:11px;border:1px solid var(--bd);background:var(--sf);color:var(--mu);font:700 12px var(--f);cursor:pointer;transition:all .25s}
+.chips button.on{background:var(--ac2);border-color:var(--ac2);color:#fff;transform:translateY(-1px)}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}.sum .card{margin:0;padding:12px}.sum b{font:700 17px var(--m);display:block;margin-top:2px}
+.cp{display:flex;align-items:center;gap:11px;padding:12px;background:rgba(0,102,255,.13);border:1px solid rgba(0,194,255,.25);border-radius:16px;margin-bottom:12px;animation:vin .35s}
+.av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--ac2),var(--ac));display:grid;place-items:center;font-weight:800;color:#fff;flex-shrink:0}
+.pv{background:var(--sf);border:1px dashed var(--bd);border-radius:12px;padding:11px;margin-bottom:11px}.pv .amt{font-size:24px;color:var(--ok)}.pv small{color:var(--mu);font-size:10px;font-family:var(--m)}
+.ent{background:var(--sf);border:1px solid var(--bd);border-radius:13px;padding:11px;margin-bottom:8px;animation:sl .35s both}
+@keyframes sl{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+.ent .a{display:flex;justify-content:space-between;gap:8px}.ent b{font-size:14px}.ent .amt{color:var(--ok);font-size:14px}.ent small{display:block;color:var(--mu);font:500 11px var(--m);margin:4px 0 9px}
+.tb{background:linear-gradient(135deg,rgba(0,102,255,.2),rgba(0,194,255,.08));border:1px solid rgba(0,194,255,.3);border-radius:18px;padding:14px;margin-bottom:12px}.tb .amt{font-size:28px;color:var(--ac)}
+.emp{text-align:center;padding:34px 20px;color:var(--mu);font-size:13px}.emp b{display:block;color:var(--tx);font-size:14px;margin-bottom:4px}
+.set{display:flex;justify-content:space-between;align-items:center;gap:12px}.set small{display:block;color:var(--mu);font-size:11px;margin-top:2px}.set .in{width:100px;text-align:right}
+.ov{position:fixed;inset:0;background:rgba(2,8,20,.7);z-index:50;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}.ov.on{display:flex;animation:fi .2s}
+@keyframes fi{from{opacity:0}}
+.sheet{background:var(--sf);border:1px solid var(--bd);border-bottom:0;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:88%;overflow-y:auto;padding:12px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:su .45s cubic-bezier(.2,1.1,.3,1)}
+@keyframes su{from{transform:translateY(100%)}}
+.hd{width:38px;height:4px;border-radius:2px;background:var(--bd);margin:0 auto 14px}
+.shg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.shg button{background:var(--cd);border:1px solid var(--bd);border-radius:13px;padding:11px 4px;color:var(--tx);font:600 11px var(--f);display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:transform .15s}.shg button:active{transform:scale(.92)}.shg span{font-size:20px}
+.line{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}.line small{color:var(--mu);font-family:var(--m);font-size:11px;display:block}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-26px) scale(.92);display:flex;align-items:center;gap:10px;max-width:calc(100% - 28px);padding:12px 17px;border-radius:14px;font-size:13px;font-weight:700;color:#fff;background:#0a6cff;opacity:0;pointer-events:none;transition:opacity .3s,transform .45s cubic-bezier(.3,1.5,.5,1);z-index:90;box-shadow:0 12px 32px rgba(0,0,0,.4);overflow:hidden}
+#toast.on{opacity:1;transform:translate(-50%,0) scale(1)}
+#toast i{width:21px;height:21px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font:800 12px var(--m);font-style:normal;flex-shrink:0}
+#toast:after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;background:rgba(255,255,255,.55);transform-origin:left;animation:tb 2.6s linear forwards}
+@keyframes tb{to{transform:scaleX(0)}}
+#toast.success{background:#00a676}#toast.error{background:#e5384a}#toast.warn{background:#f5a800;color:#1f1500}#toast.warn i{background:rgba(0,0,0,.15)}#toast.warn:after{background:rgba(0,0,0,.35)}
+.eb{background:rgba(255,170,0,.14);border:1px solid rgba(255,170,0,.45);color:var(--wn);border-radius:12px;padding:10px 12px;font-size:12px;font-weight:600;margin-bottom:10px}
+#load{position:fixed;inset:0;background:rgba(10,22,40,.85);z-index:80;display:none;place-items:center;color:#fff;font-size:13px}#load.on{display:grid}
+#load:before{content:"";width:34px;height:34px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--ac);border-radius:50%;animation:rot .7s linear infinite;margin-bottom:60px;position:absolute}
+@keyframes rot{to{transform:rotate(360deg)}}
+#splash{position:fixed;inset:0;background:#0a1628;z-index:100;display:grid;place-items:center;transition:opacity .5s .9s,visibility 0s 1.4s}#splash.go{opacity:0;visibility:hidden}
+#splash div{text-align:center;color:#fff;animation:sp 1s cubic-bezier(.2,1.2,.3,1)}#splash .logo{width:74px;height:74px;border-radius:22px;margin:0 auto 14px}#splash .logo svg{width:38px;height:38px}#splash b{font-size:17px}
+@keyframes sp{from{opacity:0;transform:scale(.6) translateY(20px)}}
+#billT,#pc .bill{width:700px;background:#fff;color:#111;font-family:Arial,sans-serif;padding:30px;position:relative}#billT{position:fixed;left:-9999px;top:0}
+.bill .h{display:flex;justify-content:space-between;border-bottom:3px solid #0066ff;padding-bottom:16px;margin-bottom:16px}.bill h2{margin:0;font-size:22px;color:#0a1628}.bill .k{font-size:11px;color:#6b82a8;letter-spacing:1px;margin-top:3px}
+.bill .to{background:#f0f6ff;border-left:4px solid #0066ff;padding:10px 14px;margin-bottom:16px;font-size:18px;font-weight:800}.bill .to small{display:block;font-size:10px;color:#6b82a8;font-weight:400}
+.bill table{width:100%;border-collapse:collapse}.bill th{background:#0a1628;color:#fff;padding:9px;font-size:11px;text-align:right}.bill td{padding:8px 9px;border:1px solid #dde3ea;font-size:12px;text-align:right}.bill tr:nth-child(even) td{background:#f8fafc}
+.bill .l{text-align:left}.bill .gt{margin:16px 0 0 auto;width:240px;background:#0a1628;color:#00c2ff;padding:13px 18px;border-radius:10px;text-align:right;font:900 24px monospace}.bill .gt small{display:block;font:10px Arial;color:#8fa3c4}
+.bill .st{position:absolute;right:34px;top:96px;border:3px solid;padding:3px 14px;font:900 22px Arial;transform:rotate(-12deg);opacity:.75;border-radius:6px}.bill .ty{text-align:center;color:#888;font-size:12px;margin-top:20px;border-top:1px solid #dde3ea;padding-top:11px}
+.logo{overflow:hidden}.logo img,.av img{width:100%;height:100%;object-fit:cover;border-radius:50%}.logo img{border-radius:0}.av{overflow:hidden}.av.sm{width:34px;height:34px;font-size:13px}.av.lg{width:68px;height:68px;font-size:26px}.bill .pic{width:54px;height:54px;border-radius:50%;object-fit:cover;margin-right:12px}
+.av.sq{border-radius:12px}.av.sq img{border-radius:0}.th{width:42px;height:42px;border-radius:9px;object-fit:cover;flex-shrink:0}.bill .th2{width:28px;height:28px;border-radius:5px;object-fit:cover;vertical-align:middle;margin-right:8px}
+.cs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 10px}.cs div{background:var(--cd);border:1px solid var(--bd);border-radius:13px;padding:10px;font-size:11px;color:var(--mu)}.cs b{display:block;font:700 13px var(--m);margin-top:3px}
+#pc{display:none}@media print{body>*:not(#pc){display:none!important}#pc{display:block!important}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div id="splash"><div><div class="logo"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h6M9 17h6"/></svg></div><b>Shreenathji Half Cutting</b></div></div>
+<div id="app">
+<header><div class="logo" id="hl"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h6M9 17h6"/></svg></div><div><h1 id="hn">Shreenathji Half Cutting</h1><p id="ht">Overview</p></div></header>
+<main id="main">
+
+<section class="v on" id="v-home">
+ <div class="hero"><div class="t" id="mName">This month</div><div class="big" id="dM">₹0</div><div class="s" id="dMs"></div></div>
+ <div class="card">
+  <div class="yr"><button onclick="yy(-1)" aria-label="Previous year">‹</button><b id="yl"></b><button onclick="yy(1)" aria-label="Next year">›</button></div>
+  <div class="rr"><div class="rw"><svg viewBox="0 0 100 100"><circle class="rb" cx="50" cy="50" r="42"/><circle class="rf" id="rg" cx="50" cy="50" r="42"/></svg><span id="rp">0%</span></div>
+  <div class="st"><div>Turnover<b id="sT">₹0</b></div><div class="g">Paid<b id="sP">₹0</b></div><div class="r">Unpaid<b id="sU">₹0</b></div></div></div>
+  <div class="bars" id="bars"></div><div class="ml" id="ml"></div><div class="bi" id="bi">Tap a bar to see that month</div>
+ </div>
+ <div class="sh"><span>Waiting for payment</span><span id="uc"></span></div><div id="dU"></div>
+</section>
+
+<section class="v" id="v-bill">
+ <div id="b0" class="card"><div class="lbl" id="b0l">Start a new bill</div><button id="b0c" class="btn m s" style="display:none;margin-bottom:12px" onclick="cancelEdit()">Cancel editing</button>
+  <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:11px"><div style="text-align:center"><div class="av lg" id="tp" onclick="pickC()" style="cursor:pointer;background:var(--sf);border:1px dashed var(--ac);color:var(--ac)">＋</div><small style="font-size:10px;color:var(--mu)">Photo</small></div><div class="field" style="flex:1;margin:0"><label>Customer name</label><input id="cin" class="in" list="cl" placeholder="e.g. Ramesh Patel" autocomplete="off"><datalist id="cl"></datalist></div></div><input id="cimg" type="file" accept="image/*" hidden>
+  <button class="btn p w" onclick="setC()">Set customer and begin</button></div>
+ <div id="b1" style="display:none">
+  <div class="eb" id="eb" style="display:none"></div>
+  <div class="cp"><div class="av" id="cAv" onclick="pickC()" style="cursor:pointer" title="Change photo">R</div><div style="flex:1;min-width:0"><b id="cNm"></b><div id="cSub" style="font-size:11px;color:var(--mu)"></div></div><button class="btn o s" onclick="chC()">Change</button></div>
+  <div class="card"><div class="lbl" id="ft">Add entry</div>
+   <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:11px"><div style="text-align:center"><div class="av lg sq" id="sp" onclick="$('simg').click()" style="cursor:pointer;background:var(--sf);border:1px dashed var(--ac);color:var(--ac)">＋</div><small style="font-size:10px;color:var(--mu)">Photo</small></div><div class="field" style="flex:1;margin:0"><label>Sticker name</label><input id="sIn" class="in" list="sl" placeholder="e.g. Rajnigandha Silver" autocomplete="off"><datalist id="sl"></datalist></div></div><input id="simg" type="file" accept="image/*" hidden>
+   <div class="field"><label>Date and time</label><input id="dIn" class="in" type="datetime-local"></div>
+   <div class="row"><div class="field"><label>Cuts per sheet</label><input id="cuIn" class="in" type="number" min="1" value="1" inputmode="numeric"></div><div class="field"><label>Quantity (sheets)</label><input id="qIn" class="in" type="number" min="1" value="1000" inputmode="numeric"></div></div>
+   <div class="field"><label>Rate (₹ per 1000 copies)</label><input id="rIn" class="in" type="number" min="0" value="80" inputmode="decimal"></div>
+   <div class="pv"><small>Entry total</small><div class="amt" id="pA">₹80.00</div><small id="pF"></small></div>
+   <div class="flex"><button class="btn m" id="ce" style="display:none;flex:.5" onclick="cEd()">Cancel</button><button class="btn p" id="ab" onclick="addE()">Add entry</button></div>
+  </div>
+  <div class="tb" id="tbar" style="display:none"><div class="lbl" style="margin:0">Bill total</div><div class="amt" id="gt">₹0</div><div id="gc" style="font-size:11px;color:var(--mu);margin-top:2px"></div>
+   <div class="flex" id="sv" style="margin-top:12px"><button class="btn g" onclick="saveInv(true)">Save as paid</button><button class="btn d" onclick="saveInv(false)">Save as unpaid</button></div><div class="flex" id="up" style="margin-top:12px;display:none"><button class="btn m" onclick="cancelEdit()">Cancel</button><button class="btn p" onclick="updateInv()">Update invoice</button></div></div>
+  <div class="sh" id="eh" style="display:none"><span>Entries</span><button class="btn d s" onclick="clrE()">Clear all</button></div>
+  <div id="el"></div>
+  <div class="emp" id="ee" style="display:none"><b>No entries yet</b>Add the first sticker above.</div>
+ </div>
+</section>
+
+<section class="v" id="v-inv">
+ <div class="sum"><div class="card"><span style="font-size:11px;color:var(--mu)">Paid</span><b id="iP" style="color:var(--ok)">₹0</b></div><div class="card"><span style="font-size:11px;color:var(--mu)">Unpaid</span><b id="iU" style="color:var(--no)">₹0</b></div></div>
+ <input id="q" class="in" placeholder="Search customer or invoice number" oninput="rInv()" style="margin-top:12px">
+ <div class="chips" id="chips"><button class="on" data-f="all">All</button><button data-f="unpaid">Unpaid</button><button data-f="paid">Paid</button></div>
+ <div id="il"></div>
+</section>
+
+<section class="v" id="v-cus">
+ <div class="flex" style="margin-bottom:12px"><input id="cq" class="in" placeholder="Search name or phone" oninput="rCus()" style="flex:1"><button class="btn p" style="flex:none" onclick="openCus('')">＋ Add</button></div>
+ <div id="cul"></div>
+</section>
+
+<section class="v" id="v-set">
+ <div class="card"><div class="lbl">Admin profile</div><div style="display:flex;align-items:center;gap:14px"><div class="av lg" id="ap"></div><div class="flex" style="flex:1;flex-direction:column"><button class="btn o s" onclick="$('aimg').click()">Change photo</button><button class="btn m s" onclick="rmA()">Remove</button></div></div><input id="aimg" type="file" accept="image/*" hidden></div>
+ <div class="card"><div class="lbl">Billing</div><div class="set"><div><b style="font-size:13px">Minimum charge (₹)</b><small>Applied per entry if the total is lower</small></div><input id="mc" class="in" type="number" min="0" inputmode="decimal"></div></div>
+ <div class="card"><div class="lbl">Business details (shown on bills)</div>
+  <div class="field"><label>Business name</label><input id="bz" class="in"></div>
+  <div class="field" style="margin:0"><label>Phone</label><input id="ph" class="in" type="tel" placeholder="+91 98765 43210"></div></div>
+ <div class="card"><div class="lbl">Backup</div><div class="flex"><button class="btn o" onclick="exp()">Export backup</button><button class="btn o" onclick="$('imp').click()">Import backup</button></div><input id="imp" type="file" accept=".json" hidden></div>
+ <div class="card" style="border-color:rgba(255,71,87,.4)"><div class="lbl" style="color:var(--no)">Danger zone</div><button class="btn d w" onclick="rst()">Delete all data</button></div>
+</section>
+</main>
+<nav id="nav"><i id="ind"></i>
+ <button class="on" data-v="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+ <button data-v="bill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>New bill</button>
+ <button data-v="inv"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h6M9 17h6"/></svg>Invoices</button>
+ <button data-v="cus"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.3c2.2.7 3.5 2.5 3.5 5.7"/></svg>Customers</button>
+ <button data-v="set"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Settings</button>
+</nav>
+</div>
+
+<div class="ov" id="cus" onclick="if(event.target===this)cls('cus')"><input id="cimg2" type="file" accept="image/*" hidden><div class="sheet" id="cusB"></div></div>
+<div class="ov" id="det" onclick="if(event.target===this)cls('det')"><div class="sheet" id="detB"></div></div>
+<div class="ov" id="ask" onclick="if(event.target===this)cls('ask')"><div class="sheet"><div class="hd"></div><p id="am" style="text-align:center;font-weight:600;margin:6px 0 16px"></p><div class="flex"><button class="btn m" onclick="cls('ask')">Cancel</button><button class="btn d" id="ay">Confirm</button></div></div></div>
+<div id="load">Making your bill image…</div><div id="toast"></div><div id="billT"></div><div id="pc"></div>
+
+<script src="native.js"></script>
+<script>
+const $=i=>document.getElementById(i),KEY='shc_v3',MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let db={seq:0,inv:[],cust:{},cdet:{},stk:{},adminImg:'',min:80,biz:'Shreenathji Half Cutting',phone:'',draft:{customer:'',entries:[]}},yr=new Date().getFullYear(),flt='all',ed=-1,cur=null,selBar=-1;
+try{const s=localStorage.getItem(KEY);if(s)db={...db,...JSON.parse(s)};else{const o=JSON.parse(localStorage.getItem('shc_v2')||'null');if(o){db.draft={customer:o.customer||'',entries:o.entries||[]};db.min=o.minCharge??80;db.biz=o.bizName||db.biz;db.phone=o.bizPhone||''}}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){};window.sqlSave&&window.sqlSave()};
+const inr=n=>'₹'+(+n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}),inr0=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const fd=s=>{const d=new Date(s);return String(d.getDate()).padStart(2,'0')+' '+MN[d.getMonth()]+' '+d.getFullYear()};
+const nowL=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16)};
+const sum=a=>a.reduce((s,e)=>s+e.total,0),calc=(q,r,c)=>Math.max(Math.ceil(q/1000)*r*c,db.min),yOf=i=>+i.date.slice(0,4),mOf=i=>+i.date.slice(5,7)-1;
+const pl=(n,w)=>n+' '+w+(n===1?'':'s');
+const HL=$('hl').innerHTML,avH=n=>db.cust[n]?`<img src="${db.cust[n]}" alt="">`:esc((n||'?')[0].toUpperCase());let tmpC='';
+function imgPick(f,cb){if(!f)return;const r=new FileReader;r.onload=()=>{const im=new Image;im.onload=()=>{const s=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=200;c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,200,200);cb(c.toDataURL('image/jpeg',.82))};im.onerror=()=>toast('That image could not be read');im.src=r.result};r.readAsDataURL(f)}
+function pickC(){$('cimg').click()}
+function rPh(){$('tp').innerHTML=tmpC?`<img src="${tmpC}" alt="">`:'＋'}
+function rAd(){const a=db.adminImg;$('ap').innerHTML=a?`<img src="${a}" alt="">`:esc((db.biz||'S')[0]);$('hl').innerHTML=a?`<img src="${a}" alt="">`:HL}
+function rmA(){db.adminImg='';save();rAd();toast('Photo removed')}
+$('cimg').onchange=e=>{const f=e.target.files[0];e.target.value='';imgPick(f,d=>{if(db.draft.customer){db.cust[db.draft.customer]=d;save();rBill();rInv()}else{tmpC=d;rPh()}})};
+$('aimg').onchange=e=>{const f=e.target.files[0];e.target.value='';imgPick(f,d=>{db.adminImg=d;save();rAd();toast('Profile photo updated')})};
+let tt;const TI={success:'✓',error:'✕',warn:'!',info:'i'};
+const kd=m=>/delet|remov|cleared|could not|blocked|did not load|not supported|not a valid|no longer/i.test(m)?'error':/^(enter |add |save or|finish)|first$|first,|already exists/i.test(m)?'warn':/marked unpaid/i.test(m)?'info':'success';
+function toast(m,t){t=t||kd(m);const e=$('toast');e.className='';void e.offsetWidth;e.className='on '+t;e.innerHTML=`<i>${TI[t]}</i><span>${esc(m)}</span>`;clearTimeout(tt);tt=setTimeout(()=>e.className='',2600)}
+const cls=i=>$(i).classList.remove('on'),opn=i=>$(i).classList.add('on');
+function ask(m,fn,y='Confirm'){$('am').textContent=m;$('ay').textContent=y;$('ay').onclick=()=>{cls('ask');fn()};opn('ask')}
+function cnt(el,to,f=inr0){const from=el._v||0;el._v=to;if(matchMedia('(prefers-reduced-motion:reduce)').matches||from===to){el.textContent=f(to);return}const t0=performance.now();(function s(t){const p=Math.min(1,(t-t0)/1000),e=1-Math.pow(1-p,3);el.textContent=f(from+(to-from)*e);if(p<1)requestAnimationFrame(s)})(t0)}
+
+/* navigation */
+const VS=['home','bill','inv','cus','set'],TT={home:'Overview',bill:'New bill',inv:'Invoices',cus:'Customers',set:'Settings'};
+function go(v){document.querySelectorAll('.v').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$('ind').style.transform=`translateX(${VS.indexOf(v)*100}%)`;$('ht').textContent=TT[v];$('main').scrollTop=0;if(v==='home')rDash();if(v==='inv')rInv();if(v==='cus')rCus()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+
+/* dashboard */
+function yy(d){yr+=d;selBar=-1;rDash()}
+function rDash(){
+ const n=new Date(),mi=db.inv.filter(i=>yOf(i)===n.getFullYear()&&mOf(i)===n.getMonth()),yi=db.inv.filter(i=>yOf(i)===yr);
+ const mo=Array(12).fill(0);yi.forEach(i=>mo[mOf(i)]+=i.total);
+ const T=sum(yi),P=sum(yi.filter(i=>i.paid)),U=T-P;
+ $('mName').textContent=n.toLocaleString('en-IN',{month:'long',year:'numeric'})+' turnover';
+ cnt($('dM'),sum(mi));$('dMs').textContent=pl(mi.length,'invoice')+' · '+inr0(sum(mi.filter(i=>i.paid)))+' collected';
+ $('yl').textContent=yr;cnt($('sT'),T);cnt($('sP'),P);cnt($('sU'),U);
+ const pc=T?P/T:0;cnt($('rp'),pc*100,v=>Math.round(v)+'%');
+ requestAnimationFrame(()=>$('rg').style.strokeDashoffset=263.9*(1-pc));
+ const mx=Math.max(...mo,1);
+ $('bars').innerHTML=mo.map((v,i)=>`<div class="bar${yr===n.getFullYear()&&i===n.getMonth()?' cur':''}${i===selBar?' sel':''}" onclick="pick(${i},${v})"><i data-h="${v/mx*100}"></i></div>`).join('');
+ $('ml').innerHTML=MN.map(m=>`<span>${m[0]}</span>`).join('');
+ setTimeout(()=>document.querySelectorAll('.bar i').forEach(b=>b.style.height=b.dataset.h+'%'),30);
+ $('bi').textContent=selBar<0?'Tap a bar to see that month':MN[selBar]+' '+yr+': '+inr(mo[selBar]);
+ const u=db.inv.filter(i=>!i.paid).sort((a,b)=>a.date<b.date?-1:1);
+ $('uc').textContent=u.length?inr0(sum(u))+' in '+u.length:'';
+ $('dU').innerHTML=u.length?u.slice(0,4).map(card).join(''):'<div class="emp"><b>All paid up</b>No invoices are waiting for payment.</div>';
+}
+function pick(i,v){selBar=i;document.querySelectorAll('.bar').forEach((b,k)=>b.classList.toggle('sel',k===i));$('bi').textContent=MN[i]+' '+yr+': '+inr(v)}
+
+/* invoices */
+const card=(i,k=0)=>`<div class="inv" data-id="${i.id}" style="animation-delay:${Math.min(k,8)*45}ms" onclick="openInv(${i.id})"><div class="a"><div style="display:flex;gap:10px;align-items:center;min-width:0"><div class="av sm">${avH(i.customer)}</div><div style="min-width:0"><div class="n">${i.no}</div><div class="c">${esc(i.customer)}</div></div></div><div class="amt">${inr(i.total)}</div></div><div class="z"><span>${fd(i.date)} · ${pl(i.entries.length,'entry').replace('entrys','entries')}</span><button class="pill ${i.paid?'paid':'unpaid'}" onclick="event.stopPropagation();tog(${i.id})">${i.paid?'Paid':'Unpaid'}</button></div></div>`;
+function rInv(){
+ const q=$('q').value.toLowerCase().trim(),l=db.inv.filter(i=>(flt==='all'||(flt==='paid')===i.paid)&&(i.customer.toLowerCase().includes(q)||i.no.toLowerCase().includes(q)));
+ const P=sum(db.inv.filter(i=>i.paid));cnt($('iP'),P);cnt($('iU'),sum(db.inv)-P);
+ $('il').innerHTML=l.length?l.map(card).join(''):`<div class="emp"><b>${db.inv.length?'No matches':'No invoices yet'}</b>${db.inv.length?'Try a different search or filter.':'Create a bill and save it to see it here.'}</div>`;
+}
+$('chips').onclick=e=>{const f=e.target.dataset.f;if(!f)return;flt=f;document.querySelectorAll('#chips button').forEach(b=>b.classList.toggle('on',b.dataset.f===f));rInv()};
+function tog(id){const i=db.inv.find(x=>x.id===id);i.paid=!i.paid;i.paidOn=i.paid?nowL():null;save();rInv();rDash();rCus();if($('cus').classList.contains('on'))rCusB();if($('det').classList.contains('on'))openInv(id);
+ const p=document.querySelector(`[data-id="${id}"] .pill`);if(p)p.classList.add('pop');toast(i.no+' marked '+(i.paid?'paid':'unpaid'))}
+function openInv(id){const i=db.inv.find(x=>x.id===id);if(!i)return;cur=i;
+ $('detB').innerHTML=`<div class="hd"></div><div class="a" style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:11px;align-items:center"><div class="av">${avH(i.customer)}</div><div><div class="n" style="font:500 11px var(--m);color:var(--mu)">${i.no} · ${fd(i.date)}</div><b style="font-size:18px">${esc(i.customer)}</b></div></div><button class="pill ${i.paid?'paid':'unpaid'}" onclick="tog(${i.id})">${i.paid?'Paid':'Unpaid'}</button></div>
+ <div style="margin:10px 0">${i.entries.map(e=>`<div class="line"><div style="display:flex;gap:10px;align-items:center">${stk(e.sticker)}<div>${esc(e.sticker)}<small>${e.cuts} cut · ${e.qty.toLocaleString('en-IN')} × ₹${e.rate}/1k</small></div></div><b class="amt" style="font-size:13px">${inr(e.total)}</b></div>`).join('')}</div>
+ <div class="line" style="border:0"><b>Total</b><b class="amt" style="color:var(--ac)">${inr(i.total)}</b></div>
+ ${i.paid&&i.paidOn?`<div style="font-size:11px;color:var(--ok)">Paid on ${fd(i.paidOn)}</div>`:''}${i.edited?`<div style="font-size:11px;color:var(--mu)">Last edited ${fd(i.edited)}</div>`:''}
+ <div class="shg"><button onclick="shareWA()"><span>💬</span>WhatsApp</button><button onclick="saveImg()"><span>🖼️</span>Save image</button><button onclick="prt()"><span>🖨️</span>Print / PDF</button><button onclick="cpy()"><span>📋</span>Copy</button></div>
+ <button class="btn ${i.paid?'m':'g'} w" onclick="tog(${i.id})">${i.paid?'Mark unpaid':'Mark as paid'}</button><div class="flex" style="margin-top:8px"><button class="btn o" onclick="editInv(${i.id})">Edit invoice</button><button class="btn d" onclick="delInv(${i.id})">Delete</button></div>`;opn('det');prep(i).catch(()=>{pre={}})}
+function delInv(id){cls('det');ask('Delete this invoice permanently?',()=>{db.inv=db.inv.filter(i=>i.id!==id);if(db.draft.editId===id)db.draft={customer:'',entries:[]};save();rAll();toast('Invoice deleted')},'Delete')}
+
+/* billing */
+function setC(){const n=$('cin').value.trim();if(!n)return toast('Enter a customer name');db.draft.customer=n;if(tmpC){db.cust[n]=tmpC;tmpC='';rPh()}save();rBill()}
+function chC(){if(db.draft.editId){db.draft.customer='';save();rBill();return}const go_=()=>{db.draft={customer:'',entries:[]};ed=-1;$('cin').value='';save();rBill()};db.draft.entries.length?ask('Changing customer clears the unsaved entries.',go_,'Clear and change'):go_()}
+function pv(){const q=+$('qIn').value||0,c=+$('cuIn').value||1,r=+$('rIn').value||0;$('pA').textContent=inr(calc(q,r,c));$('pF').textContent=`ceil(${q}/1000)=${Math.ceil(q/1000)} × ₹${r.toFixed(2)} × ${pl(c,'cut')}`}
+['qIn','cuIn','rIn'].forEach(i=>$(i).oninput=pv);
+function addE(){const d=db.draft,c=Math.max(1,+$('cuIn').value||1),q=Math.max(1,+$('qIn').value||1),r=Math.max(0,+$('rIn').value||0),e={date:$('dIn').value||nowL(),sticker:$('sIn').value.trim()||'—',cuts:c,qty:q,rate:r,total:calc(q,r,c)};
+ if(ed>=0){d.entries[ed]=e;toast('Entry updated')}else{d.entries.push(e);toast('Entry added')}if(tmpS&&e.sticker!=='—')db.stk[e.sticker]=tmpS;ed=-1;fRst();save();rBill()}
+function fRst(){$('sIn').value='';tmpS='';rSp();$('cuIn').value=1;$('qIn').value=1000;$('rIn').value=db.min||80;$('dIn').value=nowL();$('ft').textContent='Add entry';$('ab').textContent='Add entry';$('ce').style.display='none';pv()}
+function cEd(){ed=-1;fRst()}
+function editE(i){const e=db.draft.entries[i];ed=i;$('sIn').value=e.sticker;tmpS='';rSp();$('dIn').value=e.date;$('cuIn').value=e.cuts;$('qIn').value=e.qty;$('rIn').value=e.rate;$('ft').textContent='Edit entry '+(i+1);$('ab').textContent='Save changes';$('ce').style.display='';pv();$('main').scrollTo({top:80,behavior:'smooth'})}
+function delE(i){db.draft.entries.splice(i,1);if(ed===i)cEd();save();rBill();toast('Entry deleted')}
+function clrE(){ask('Clear all unsaved entries?',()=>{db.draft.entries=[];cEd();save();rBill()},'Clear all')}
+function rBill(){const d=db.draft,h=!!d.customer,E=d.entries;
+ $('b0').style.display=h?'none':'';$('b1').style.display=h?'':'none';
+ const ei=d.editId?db.inv.find(x=>x.id===d.editId):null;if(d.editId&&!ei)d.editId=null;$('eb').style.display=ei?'':'none';if(ei)$('eb').textContent='Editing '+ei.no+' — tap Update invoice to apply your changes';$('sv').style.display=ei?'none':'';$('up').style.display=ei?'':'none';$('b0l').textContent=ei?'Choose the customer':'Start a new bill';$('b0c').style.display=ei?'':'none';
+ $('cl').innerHTML=cn().map(c=>`<option value="${esc(c)}">`).join('');$('sl').innerHTML=sn().map(c=>`<option value="${esc(c)}">`).join('');
+ if(h){$('cAv').innerHTML=avH(d.customer);$('cNm').textContent=d.customer;$('cSub').textContent=pl(E.length,'entry').replace('entrys','entries')+' · '+inr(sum(E))}
+ $('tbar').style.display=E.length?'':'none';$('eh').style.display=E.length?'':'none';$('ee').style.display=h&&!E.length?'':'none';
+ cnt($('gt'),sum(E),inr);$('gc').textContent=pl(E.length,'entry').replace('entrys','entries');
+ $('el').innerHTML=E.map((e,i)=>`<div class="ent" style="animation-delay:${Math.min(i,6)*40}ms"><div class="a"><div style="display:flex;gap:10px;align-items:center;min-width:0">${stk(e.sticker)}<b>${i+1}. ${esc(e.sticker)}</b></div><span class="amt">${inr(e.total)}</span></div><small>${fd(e.date)} · ${pl(e.cuts,'cut')} · ${e.qty.toLocaleString('en-IN')} sheets · ₹${e.rate}/1k</small><div class="flex"><button class="btn o s" onclick="editE(${i})">Edit</button><button class="btn d s" onclick="delE(${i})">Delete</button></div></div>`).join('')}
+function editInv(id){const i=db.inv.find(x=>x.id===id);if(!i)return;const go_=()=>{db.draft={customer:i.customer,entries:JSON.parse(JSON.stringify(i.entries)),editId:i.id};ed=-1;fRst();save();cls('det');cls('cus');rBill();go('bill');toast('Editing '+i.no+' — update it when you are done','info')};
+ db.draft.entries.length&&db.draft.editId!==i.id?ask('You have an unsaved bill. Discard it and edit '+i.no+'?',go_,'Discard and edit'):go_()}
+function updateInv(){const d=db.draft,i=db.inv.find(x=>x.id===d.editId);if(!i){d.editId=null;save();rBill();return toast('That invoice no longer exists','error')}if(!d.customer)return toast('Choose a customer first','warn');if(!d.entries.length)return toast('Add at least one entry first','warn');
+ i.customer=d.customer;i.entries=d.entries;i.total=sum(d.entries);i.edited=nowL();const no=i.no;db.draft={customer:'',entries:[]};ed=-1;$('cin').value='';save();rAll();fRst();go('inv');toast('Invoice '+no+' updated','success')}
+function cancelEdit(){db.draft={customer:'',entries:[]};ed=-1;$('cin').value='';fRst();save();rBill();go('inv');toast('Edit cancelled — invoice left unchanged','info')}
+function saveInv(paid){const d=db.draft;if(!d.entries.length)return toast('Add entries first');
+ db.inv.unshift({id:Date.now(),no:'INV-'+String(++db.seq).padStart(4,'0'),customer:d.customer,date:nowL(),entries:d.entries,total:sum(d.entries),paid,paidOn:paid?nowL():null});
+ const no=db.inv[0].no;db.draft={customer:'',entries:[]};ed=-1;$('cin').value='';save();rAll();fRst();flt='all';document.querySelectorAll('#chips button').forEach(b=>b.classList.toggle('on',b.dataset.f==='all'));go('inv');toast('Invoice '+no+' generated · '+(paid?'Paid':'Unpaid'),'success')}
+
+/* bill image / share */
+function billHTML(i){return `<div class="bill"><div class="st" style="color:${i.paid?'#0a9a6a':'#e02f40'}">${i.paid?'PAID':'UNPAID'}</div>
+ <div class="h"><div style="display:flex;align-items:center">${db.adminImg?`<img class="pic" src="${db.adminImg}">`:''}<div><h2>${esc(db.biz)}</h2><div class="k">STICKER HALF CUTTING</div>${db.phone?`<div style="font-size:12px;color:#555;margin-top:3px">Phone: ${esc(db.phone)}</div>`:''}</div></div><div style="text-align:right"><b style="color:#0066ff;font-size:16px">INVOICE</b><div style="font-size:12px;margin-top:4px">${i.no}<br>${fd(i.date)}</div></div></div>
+ <div class="to" style="display:flex;align-items:center;gap:12px">${db.cust[i.customer]?`<img class="pic" src="${db.cust[i.customer]}">`:''}<div><small>BILL TO</small>${esc(i.customer)}</div></div>
+ <table><tr><th>#</th><th class="l">DATE</th><th class="l">STICKER</th><th>CUTS</th><th>QTY</th><th>RATE/1K</th><th>TOTAL</th></tr>${i.entries.map((e,k)=>`<tr><td>${k+1}</td><td class="l">${fd(e.date)}</td><td class="l">${db.stk[e.sticker]?`<img class="th2" src="${db.stk[e.sticker]}">`:''}<b>${esc(e.sticker)}</b></td><td>${e.cuts}</td><td>${e.qty.toLocaleString('en-IN')}</td><td>${inr(e.rate)}</td><td><b>${inr(e.total)}</b></td></tr>`).join('')}</table>
+ <div class="gt"><small>GRAND TOTAL</small>${inr(i.total)}</div><div class="ty">Thank you for your business — ${esc(db.biz)}</div></div>`}
+const fn=i=>`${i.no}_${i.customer.replace(/\W/g,'_')}.png`;
+async function canvasOf(i,q){if(typeof html2canvas==='undefined')throw 0;if(!q)$('load').classList.add('on');try{const t=$('billT');t.innerHTML=billHTML(i);await new Promise(r=>setTimeout(r,200));return await html2canvas(t,{scale:2,backgroundColor:'#fff',logging:false})}catch(e){if(!q)toast('Could not make the image — check your connection');throw e}finally{if(!q)$('load').classList.remove('on')}}
+function dl(c,i){const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=fn(i);document.body.appendChild(a);a.click();a.remove()}
+let pre={};
+function prep(i){const k=[i.id,i.paid,(db.adminImg||'').length,(db.cust[i.customer]||'').length,JSON.stringify(db.stk).length,db.biz,db.phone].join('|');if(pre.k!==k)pre={k,p:canvasOf(i,1).then(c=>new Promise(r=>c.toBlob(b=>r({c,b}),'image/png')))};return pre.p}
+async function shareWA(){const i=cur;let r;$('load').classList.add('on');try{r=await prep(i)}catch(e){pre={};toast('Could not make the image — check your connection');return}finally{$('load').classList.remove('on')}
+ const f=new File([r.b],fn(i),{type:'image/png'});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Bill '+i.no,text:i.customer+' · '+inr(i.total)});return}catch(e){if(e.name==='AbortError')return}}
+ try{await navigator.clipboard.write([new ClipboardItem({'image/png':r.b})]);toast('Bill image copied — paste it in WhatsApp')}catch(e){dl(r.c,i);toast('Bill image saved — attach it in WhatsApp')}
+ setTimeout(()=>location.href='whatsapp://send',1100)}
+async function saveImg(){const c=await canvasOf(cur);dl(c,cur);toast('Bill image saved')}
+async function prt(){const i=cur;let c;try{c=await canvasOf(i)}catch(e){return}
+ if(!window.jspdf)return toast('PDF tool did not load — check your connection');
+ const p=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),h=c.height*190/c.width,w=h>277?190*277/h:190;
+ p.addImage(c.toDataURL('image/jpeg',.92),'JPEG',(210-w)/2,10,w,Math.min(h,277));
+ const b=p.output('blob'),f=new File([b],i.no+'_'+i.customer.replace(/\W/g,'_')+'.pdf',{type:'application/pdf'});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Bill '+i.no});return}catch(e){if(e.name==='AbortError')return}}
+ const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;document.body.appendChild(a);a.click();a.remove();toast('PDF saved — open it and tap Print')}
+function cpy(){const i=cur,L='─'.repeat(36);let t=`${db.biz}${db.phone?'\nPhone: '+db.phone:''}\n${i.no} · ${fd(i.date)}\nCustomer: ${i.customer} (${i.paid?'PAID':'UNPAID'})\n${L}\n`;
+ i.entries.forEach((e,k)=>t+=`${k+1}. ${e.sticker.slice(0,18).padEnd(18)} ${String(e.qty).padStart(6)} ${inr(e.total).padStart(10)}\n`);t+=`${L}\nTOTAL: ${inr(i.total)}\nThank you!`;
+ navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Copied')).catch(()=>toast('Copy blocked by the browser')):toast('Copy is not supported here')}
+
+/* settings */
+['mc','bz','ph'].forEach(i=>$(i).oninput=()=>{db.min=+$('mc').value||0;db.biz=$('bz').value;db.phone=$('ph').value;$('hn').textContent=db.biz||'Billing';save();pv();rAd()});
+function exp(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:'application/json'}));a.download='shreenathji-backup-'+nowL().slice(0,10)+'.json';a.click();toast('Backup saved')}
+$('imp').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader;r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.inv))throw 0;ask('Replace current data with this backup?',()=>{db={...db,...d};save();init();toast('Backup restored')},'Restore')}catch(x){toast('That file is not a valid backup')}};r.readAsText(f);e.target.value=''};
+function rst(){ask('Delete all invoices and settings? This cannot be undone.',()=>{localStorage.removeItem(KEY);db={seq:0,inv:[],cust:{},cdet:{},stk:{},adminImg:'',min:80,biz:'Shreenathji Half Cutting',phone:'',draft:{customer:'',entries:[]}};save();init();go('home');toast('All data deleted')},'Delete everything')}
+
+/* stickers */
+let tmpS='',cc='';
+const stk=n=>db.stk[n]?`<img class="th" src="${db.stk[n]}" alt="">`:'';
+const sn=()=>[...new Set([...Object.keys(db.stk),...db.inv.flatMap(i=>i.entries.map(e=>e.sticker))])].filter(s=>s&&s!=='—').sort();
+function rSp(){const s=tmpS||db.stk[$('sIn').value.trim()];$('sp').innerHTML=s?`<img src="${s}" alt="">`:'＋'}
+$('simg').onchange=e=>{const f=e.target.files[0];e.target.value='';imgPick(f,d=>{tmpS=d;rSp()})};
+$('sIn').oninput=rSp;
+/* customers */
+const cn=()=>[...new Set([...db.inv.map(i=>i.customer),...Object.keys(db.cust),...Object.keys(db.cdet)])].sort((a,b)=>a.localeCompare(b)),cinv=n=>db.inv.filter(i=>i.customer===n);
+function rCus(){const q=$('cq').value.toLowerCase().trim(),all=cn(),l=all.filter(n=>n.toLowerCase().includes(q)||((db.cdet[n]||{}).phone||'').includes(q));
+ $('cul').innerHTML=l.length?l.map((n,k)=>{const v=cinv(n),T=sum(v),u=T-sum(v.filter(i=>i.paid)),ph=(db.cdet[n]||{}).phone;return `<div class="inv" data-n="${esc(n)}" style="animation-delay:${Math.min(k,8)*45}ms"><div class="a"><div style="display:flex;gap:10px;align-items:center;min-width:0"><div class="av sm">${avH(n)}</div><div style="min-width:0"><div class="c">${esc(n)}</div><div class="n">${pl(v.length,'invoice')}${ph?' · '+esc(ph):''}</div></div></div><div style="text-align:right"><div class="amt">${inr0(T)}</div>${u>0?`<div style="font-size:11px;color:var(--no)">${inr0(u)} due</div>`:'<div style="font-size:11px;color:var(--ok)">All paid</div>'}</div></div></div>`}).join(''):`<div class="emp"><b>${all.length?'No matches':'No customers yet'}</b>${all.length?'Try a different name or number.':'Tap Add to create one, or start a bill.'}</div>`}
+$('cul').onclick=e=>{const c=e.target.closest('.inv');if(c)openCus(c.dataset.n)};
+function openCus(n){cc=n;rCusB();opn('cus')}
+function rCusB(){const n=cc,v=cinv(n),T=sum(v),P=sum(v.filter(i=>i.paid)),d=db.cdet[n]||{};
+ $('cusB').innerHTML=`<div class="hd"></div><div style="display:flex;gap:14px;align-items:flex-end;margin-bottom:12px"><div class="av lg" onclick="cPhoto()" style="cursor:pointer" title="Change photo">${n?avH(n):'＋'}</div><div class="field" style="flex:1;margin:0"><label>Name</label><input id="cuN" class="in" value="${esc(n)}" placeholder="Customer name"></div></div>
+ <div class="field"><label>Phone (for payment reminders)</label><input id="cuP" class="in" type="tel" inputmode="tel" value="${esc(d.phone||'')}" placeholder="+91 98765 43210"></div>
+ <button class="btn p w" onclick="saveCus()">${n?'Save changes':'Add customer'}</button>
+ ${n?`<div class="cs"><div>Billed<b>${inr0(T)}</b></div><div>Paid<b style="color:var(--ok)">${inr0(P)}</b></div><div>Unpaid<b style="color:var(--no)">${inr0(T-P)}</b></div></div><div class="flex"><button class="btn o" onclick="billFor()">New bill</button>${T-P>0?`<button class="btn g" onclick="remind()">Send reminder</button>`:''}</div><div class="sh"><span>Invoices</span><span>${v.length}</span></div>${v.length?v.map(card).join(''):'<div class="emp"><b>No invoices yet</b>Start a bill for this customer.</div>'}<button class="btn d w" style="margin-top:8px" onclick="delCus()">Delete customer</button>`:''}`}
+function saveCus(){const nw=!cc,nn=$('cuN').value.trim(),ph=$('cuP').value.trim();if(!nn)return toast('Enter a customer name');
+ if(nn!==cc){if(cn().includes(nn))return toast('A customer with that name already exists');
+  if(cc){db.inv.forEach(i=>{if(i.customer===cc)i.customer=nn});['cust','cdet'].forEach(k=>{if(db[k][cc]){db[k][nn]=db[k][cc];delete db[k][cc]}});if(db.draft.customer===cc)db.draft.customer=nn}cc=nn}
+ db.cdet[nn]={...(db.cdet[nn]||{}),phone:ph};save();rAll();rCusB();toast(nw?'Customer '+nn+' added':'Customer updated','success')}
+function cPhoto(){if(!cc)return toast('Add the customer first, then add a photo');$('cimg2').click()}
+$('cimg2').onchange=e=>{const f=e.target.files[0];e.target.value='';imgPick(f,d=>{db.cust[cc]=d;save();rAll();toast('Customer photo updated')})};
+function billFor(){const d=db.draft;if((d.entries.length&&d.customer!==cc)||d.editId)return toast('Finish or clear the current bill first','warn');d.customer=cc;save();rBill();cls('cus');go('bill')}
+function remind(){const n=cc,u=cinv(n).filter(i=>!i.paid);let p=((db.cdet[n]||{}).phone||'').replace(/\D/g,'');if(p.length===10)p='91'+p;if(!p)return toast('Add a phone number first');
+ window.open('https://wa.me/'+p+'?text='+encodeURIComponent(`Namaste ${n},\nA gentle reminder from ${db.biz}: ${inr(sum(u))} is pending on ${pl(u.length,'invoice')} (${u.map(i=>i.no).join(', ')}).\nThank you!`),'_blank')}
+function delCus(){const n=cc,v=cinv(n);ask(`Delete ${n}${v.length?' and their '+pl(v.length,'invoice'):''}? This cannot be undone.`,()=>{db.inv=db.inv.filter(i=>i.customer!==n);delete db.cust[n];delete db.cdet[n];if(db.draft.customer===n)db.draft={customer:'',entries:[]};save();cls('cus');rAll();toast('Customer deleted')},'Delete')}
+function rAll(){rBill();rInv();rDash();rCus();if($('cus').classList.contains('on'))rCusB()}
+function init(){$('mc').value=db.min;$('bz').value=db.biz;$('ph').value=db.phone;$('hn').textContent=db.biz||'Billing';fRst();rAll();rAd();rPh()}
+(window.bootDB?window.bootDB():Promise.resolve()).catch(()=>{}).then(init);
+setTimeout(()=>$('splash').classList.add('go'),300);
+try{const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,180,180);g.addColorStop(0,'#0066ff');g.addColorStop(1,'#00c2ff');x.fillStyle=g;x.fillRect(0,0,180,180);x.strokeStyle='#fff';x.lineWidth=9;x.lineJoin='round';x.beginPath();x.moveTo(55,35);x.lineTo(100,35);x.lineTo(130,65);x.lineTo(130,145);x.lineTo(55,145);x.closePath();x.moveTo(75,95);x.lineTo(110,95);x.moveTo(75,120);x.lineTo(110,120);x.stroke();const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL();document.head.appendChild(l)}catch(e){}
+</script>
+</body>
+</html>
