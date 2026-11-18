@@ -1,0 +1,8 @@
+{
+  "appId": "com.shreenathji.billing",
+  "appName": "Shreenathji Billing",
+  "webDir": "www",
+  "backgroundColor": "#0a1628",
+  "android": { "allowMixedContent": false },
+  "plugins": { "CapacitorSQLite": { "androidIsEncryption": false } }
+}
